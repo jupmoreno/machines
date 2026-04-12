@@ -7,9 +7,8 @@ let
   runnerDir = "${config.home.homeDirectory}/actions-runner";
 in
 {
-  # TODO: replace "jupmoreno" and "/Users/jupmoreno" with your macOS username
-  home.username = "jupmoreno";
-  home.homeDirectory = "/Users/jupmoreno";
+  home.username = "jpmoreno";
+  home.homeDirectory = "/Users/jpmoreno";
   home.stateVersion = "24.11";
 
   # -----------------------------------------------------------------------
@@ -40,7 +39,7 @@ in
       # Ensure darwin-rebuild and nix are on PATH when the runner executes workflows
       EnvironmentVariables = {
         PATH = lib.concatStringsSep ":" [
-          "/etc/profiles/per-user/jupmoreno/bin"
+          "/etc/profiles/per-user/jpmoreno/bin"
           "/run/current-system/sw/bin"
           "/nix/var/nix/profiles/default/bin"
           "/usr/local/bin"
