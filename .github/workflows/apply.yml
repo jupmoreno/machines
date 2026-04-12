@@ -1,0 +1,17 @@
+name: Apply Darwin Configuration
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  apply:
+    runs-on: self-hosted
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply nix-darwin configuration
+        run: |
+          set -o pipefail
+          darwin-rebuild switch --flake .#$(hostname -s) 2>&1 | tee /tmp/darwin-rebuild.log
