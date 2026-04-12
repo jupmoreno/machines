@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../modules/darwin/homebrew.nix
+    ./homebrew.nix
     ../../modules/darwin/system-defaults.nix
   ];
 
