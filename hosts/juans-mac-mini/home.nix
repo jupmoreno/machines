@@ -7,11 +7,6 @@ let
   runnerDir = "${config.home.homeDirectory}/actions-runner";
 in
 {
-  imports = [
-    ../../modules/home/shell.nix
-    ../../modules/home/git.nix
-  ];
-
   # TODO: replace "jupmoreno" and "/Users/jupmoreno" with your macOS username
   home.username = "jupmoreno";
   home.homeDirectory = "/Users/jupmoreno";

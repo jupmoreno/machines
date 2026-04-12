@@ -3,44 +3,25 @@
 {
   imports = [
     ./homebrew.nix
-    ../../modules/darwin/system-defaults.nix
   ];
 
-  # System-wide CLI tools
   environment.systemPackages = with pkgs; [
+    gh        # GitHub CLI — used for runner registration
     curl
-    wget
-    git
-    gh         # GitHub CLI — used for runner registration
-    jq
-    ripgrep
-    fd
-    htop
-    tailscale  # Tailscale CLI (daemon managed by services.tailscale)
+    tailscale # Tailscale CLI (daemon managed by services.tailscale)
   ];
 
-  # Nix daemon (required)
   services.nix-daemon.enable = true;
-
-  # Tailscale VPN
-  # After first darwin-rebuild switch, run: tailscale up
   services.tailscale.enable = true;
 
-  # Enable zsh system-wide (required even if using home-manager zsh)
   programs.zsh.enable = true;
 
-  # Allow Touch ID for sudo
-  security.pam.enableSudoTouchIdAuth = true;
-
-  # Remote Login — enables SSH daemon (com.openssh.sshd)
-  # Connect via: ssh <user>@<tailscale-ip>
+  # Remote Login — SSH access via tailscale IP
   system.activationScripts.remoteLogin.text = ''
     /usr/sbin/systemsetup -f -setremotelogin on
   '';
 
-  # Remote Management — enables Screen Sharing / Apple Remote Desktop
-  # Connect via VNC: Finder → Go → Connect to Server → vnc://<tailscale-ip>
-  # Note: set a VNC password in System Settings → Sharing → Remote Management
+  # Remote Management — Screen Sharing / VNC via tailscale IP
   system.activationScripts.remoteManagement.text = ''
     /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
       -activate \
