@@ -15,13 +15,11 @@
 
   outputs = { self, nixpkgs, nix-darwin, home-manager }: {
     darwinConfigurations = {
-      # TODO: rename "macbook" to your actual hostname (run: hostname -s)
-      # and rename the hosts/macbook/ directory to match.
-      "macbook" = nix-darwin.lib.darwinSystem {
+      "juans-mac-mini" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin"; # Apple Silicon; use "x86_64-darwin" for Intel
         modules = [
           home-manager.darwinModules.home-manager
-          ./hosts/macbook/default.nix
+          ./hosts/juans-mac-mini/default.nix
         ];
       };
     };
