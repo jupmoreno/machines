@@ -17,20 +17,10 @@
   programs.zsh.enable = true;
 
   # Remote Login — SSH access via tailscale IP
-  system.activationScripts.remoteLogin.text = ''
-    /usr/sbin/systemsetup -f -setremotelogin on
-  '';
+  system.activationScripts.remoteLogin.text = builtins.readFile ./scripts/remote-login.sh;
 
   # Remote Management — Screen Sharing / VNC via tailscale IP
-  system.activationScripts.remoteManagement.text = ''
-    /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
-      -activate \
-      -configure -allowAccessFor -allUsers \
-      -configure -access -on \
-      -configure -privs -all \
-      -configure -clientopts -setvnclegacy -vnclegacy yes \
-      -restart -agent -console 2>/dev/null || true
-  '';
+  system.activationScripts.remoteManagement.text = builtins.readFile ./scripts/remote-management.sh;
 
   system.stateVersion = 5;
 }
