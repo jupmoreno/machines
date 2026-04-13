@@ -20,43 +20,45 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 
 Restart your terminal after installation.
 
-### 2. Authenticate the GitHub CLI
-
-`gh` is installed by this configuration, so use Nix to run it temporarily before the first apply:
-
-```bash
-nix run nixpkgs#gh -- auth login
-```
-
-### 3. Clone this repo
+### 2. Clone this repo
 
 ```bash
 git clone https://github.com/jupmoreno/machines ~/machines
 ```
 
-### 4. Apply the configuration
+### 3. Apply the configuration
 
 ```bash
 nix run nix-darwin -- switch --flake ~/machines#juans-mac-mini
 ```
 
-This will:
-- Install all packages
-- Enable Tailscale, SSH, and Screen Sharing
-- Install RustDesk via Homebrew
-- Download and register the GitHub Actions runner
+This will install all packages, enable Tailscale, SSH, Screen Sharing, and install RustDesk. The GitHub Actions runner will be skipped for now since `gh` isn't authenticated yet.
 
-### 5. Authenticate Tailscale
+### 4. Authenticate the GitHub CLI
+
+```bash
+gh auth login
+```
+
+### 5. Register the GitHub Actions runner
+
+```bash
+darwin-rebuild switch --flake ~/machines#juans-mac-mini
+```
+
+This time the runner will download, register, and start automatically.
+
+### 7. Authenticate Tailscale
 
 ```bash
 tailscale up
 ```
 
-### 6. Set a VNC password (one-time, for Screen Sharing)
+### 8. Set a VNC password (one-time, for Screen Sharing)
 
 System Settings → General → Sharing → Remote Management → enable "VNC viewers may control screen with password"
 
-### 7. Note your RustDesk ID
+### 9. Note your RustDesk ID
 
 Open RustDesk from Applications and note the permanent ID shown on the main screen. You'll use this to connect from other machines.
 
