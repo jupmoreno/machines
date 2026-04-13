@@ -10,7 +10,9 @@ echo "Setting up $HOSTNAME"
 echo "================================"
 
 # ── 1. Xcode Command Line Tools (provides git, clang, etc.) ──────────────────
-if ! command -v git &>/dev/null; then
+# Note: macOS ships a git stub at /usr/bin/git that triggers a dialog but
+# doesn't actually work. Use xcode-select -p to check if tools are installed.
+if ! xcode-select -p &>/dev/null; then
   echo ""
   echo "==> Installing Xcode Command Line Tools..."
   xcode-select --install
@@ -25,7 +27,6 @@ if ! command -v nix &>/dev/null; then
   echo "==> Installing Nix..."
   curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix \
     | sh -s -- install --no-confirm
-  # Source Nix into the current shell session
   # shellcheck disable=SC1091
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 else
@@ -42,9 +43,22 @@ else
   echo "==> Repo already cloned, skipping."
 fi
 
-# ── 4. First apply ────────────────────────────────────────────────────────────
-# Installs all packages (including gh), enables Tailscale, SSH, Screen Sharing,
-# and installs RustDesk. Runner registration is skipped until gh is authenticated.
+# ── 4. Resolve hostname ───────────────────────────────────────────────────────
+# The flake config key must match the machine's hostname (hostname -s).
+# If there is no matching config, list available ones and ask the user.
+AVAILABLE=$(grep -E '^\s+"[^"]+"\s*=' "$MACHINES_DIR/flake.nix" \
+  | sed 's/.*"\([^"]*\)".*/\1/')
+
+if ! echo "$AVAILABLE" | grep -qx "$HOSTNAME"; then
+  echo ""
+  echo "No configuration found for hostname '$HOSTNAME'."
+  echo "Available configurations:"
+  echo "$AVAILABLE" | sed 's/^/  - /'
+  echo ""
+  read -rp "Enter the configuration name to use: " HOSTNAME
+fi
+
+# ── 5. First apply ────────────────────────────────────────────────────────────
 echo ""
 echo "==> Applying configuration (first pass)..."
 nix run nix-darwin -- switch --flake "$MACHINES_DIR#$HOSTNAME"
@@ -52,18 +66,17 @@ nix run nix-darwin -- switch --flake "$MACHINES_DIR#$HOSTNAME"
 # Make darwin-rebuild available in the current session
 export PATH="/run/current-system/sw/bin:$PATH"
 
-# ── 5. Authenticate GitHub CLI ────────────────────────────────────────────────
+# ── 6. Authenticate GitHub CLI ────────────────────────────────────────────────
 echo ""
 echo "==> Authenticating GitHub CLI..."
 gh auth login
 
-# ── 6. Second apply ───────────────────────────────────────────────────────────
-# Registers and starts the GitHub Actions self-hosted runner.
+# ── 7. Second apply ───────────────────────────────────────────────────────────
 echo ""
 echo "==> Applying configuration (registering runner)..."
 darwin-rebuild switch --flake "$MACHINES_DIR#$HOSTNAME"
 
-# ── 7. Tailscale ──────────────────────────────────────────────────────────────
+# ── 8. Tailscale ──────────────────────────────────────────────────────────────
 echo ""
 echo "==> Authenticating Tailscale..."
 tailscale up
