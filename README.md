@@ -22,8 +22,10 @@ Restart your terminal after installation.
 
 ### 2. Authenticate the GitHub CLI
 
+`gh` is installed by this configuration, so use Nix to run it temporarily before the first apply:
+
 ```bash
-gh auth login
+nix run nixpkgs#gh -- auth login
 ```
 
 ### 3. Clone this repo
