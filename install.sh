@@ -24,17 +24,21 @@ fi
 NIX_BIN=$(command -v nix)
 
 # ── 2. Fetch repo ─────────────────────────────────────────────────────────────
+TMPDIR=$(mktemp -d)
 if [ ! -d "$MACHINES_DIR" ]; then
   echo ""
   echo "==> Fetching machines repo to $MACHINES_DIR..."
-  TMPDIR=$(mktemp -d)
   mkdir -p "$(dirname "$MACHINES_DIR")"
-  curl -fsSL "$REPO_TARBALL_URL" -o "$TMPDIR/machines.tar.gz"
-  tar -xzf "$TMPDIR/machines.tar.gz" -C "$TMPDIR"
-  mv "$TMPDIR/machines-main" "$MACHINES_DIR"
 else
-  echo "==> Repo already present, skipping."
+  echo ""
+  echo "==> Refreshing machines repo at $MACHINES_DIR..."
 fi
+curl -fsSL "$REPO_TARBALL_URL" -o "$TMPDIR/machines.tar.gz"
+tar -xzf "$TMPDIR/machines.tar.gz" -C "$TMPDIR"
+if [ -d "$MACHINES_DIR" ]; then
+  mv "$MACHINES_DIR" "$TMPDIR/previous-machines"
+fi
+mv "$TMPDIR/machines-main" "$MACHINES_DIR"
 
 # ── 3. Resolve hostname ───────────────────────────────────────────────────────
 # The flake config key must match the machine's hostname (hostname -s).
@@ -54,8 +58,8 @@ fi
 # ── 4. Apply ──────────────────────────────────────────────────────────────────
 echo ""
 echo "==> Applying configuration..."
-sudo "$NIX_BIN" --extra-experimental-features "nix-command flakes" \
-  run nix-darwin -- switch --flake "$MACHINES_DIR#$HOSTNAME"
+sudo -H "$NIX_BIN" --extra-experimental-features "nix-command flakes" \
+  run nix-darwin#darwin-rebuild -- switch --flake "$MACHINES_DIR#$HOSTNAME"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
