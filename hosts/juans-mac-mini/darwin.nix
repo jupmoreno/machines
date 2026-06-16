@@ -9,8 +9,9 @@
     tailscale
   ];
 
-  services.nix-daemon.enable = true;
   services.tailscale.enable = true;
+
+  system.primaryUser = "jpmoreno";
 
   nix.settings.experimental-features = "nix-command flakes";
 
