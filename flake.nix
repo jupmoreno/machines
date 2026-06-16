@@ -7,18 +7,13 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager }: {
+  outputs = { self, nixpkgs, nix-darwin }: {
     darwinConfigurations = {
       "juans-mac-mini" = nix-darwin.lib.darwinSystem {
         system = "aarch64-darwin"; # Apple Silicon; use "x86_64-darwin" for Intel
         modules = [
-          home-manager.darwinModules.home-manager
           ./hosts/juans-mac-mini/default.nix
         ];
       };

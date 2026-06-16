@@ -9,6 +9,7 @@
       cleanup = "zap";
     };
     casks = [
+      "codex"
       "rustdesk"
     ];
   };
