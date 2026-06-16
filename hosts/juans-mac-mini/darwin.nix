@@ -13,6 +13,12 @@
 
   system.primaryUser = "jpmoreno";
 
+  nix-homebrew = {
+    enable = true;
+    user = "jpmoreno";
+    autoMigrate = true;
+  };
+
   nix.enable = false;
 
   programs.zsh.enable = true;
