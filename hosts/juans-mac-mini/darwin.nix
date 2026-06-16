@@ -13,7 +13,7 @@
 
   system.primaryUser = "jpmoreno";
 
-  nix.settings.experimental-features = "nix-command flakes";
+  nix.enable = false;
 
   programs.zsh.enable = true;
 
