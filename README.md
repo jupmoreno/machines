@@ -18,8 +18,9 @@ curl -fsSL https://raw.githubusercontent.com/jupmoreno/machines/main/install.sh 
 
 The script will:
 1. Install Nix
-2. Fetch this repo to `~/.config/machines`
-3. Apply the configuration (Codex, RustDesk, Tailscale, and Nix settings)
+2. Install Xcode Command Line Tools when needed
+3. Fetch this repo to `~/.config/machines`
+4. Apply the configuration (Codex, RustDesk, Tailscale, and Nix settings)
 
 After the script completes, two manual steps remain:
 

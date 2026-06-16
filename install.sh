@@ -23,7 +23,22 @@ fi
 
 NIX_BIN=$(command -v nix)
 
-# ── 2. Fetch repo ─────────────────────────────────────────────────────────────
+# ── 2. Xcode Command Line Tools ───────────────────────────────────────────────
+if ! xcode-select -p &>/dev/null; then
+  echo ""
+  echo "==> Installing Xcode Command Line Tools..."
+  xcode-select --install 2>/dev/null || true
+  echo ""
+  echo "A macOS dialog has opened to install developer tools."
+  echo "Complete the installation to continue."
+  until xcode-select -p &>/dev/null; do
+    sleep 5
+  done
+else
+  echo "==> Xcode Command Line Tools already installed, skipping."
+fi
+
+# ── 3. Fetch repo ─────────────────────────────────────────────────────────────
 TMPDIR=$(mktemp -d)
 if [ ! -d "$MACHINES_DIR" ]; then
   echo ""
@@ -40,7 +55,7 @@ if [ -d "$MACHINES_DIR" ]; then
 fi
 mv "$TMPDIR/machines-main" "$MACHINES_DIR"
 
-# ── 3. Resolve hostname ───────────────────────────────────────────────────────
+# ── 4. Resolve hostname ───────────────────────────────────────────────────────
 # The flake config key must match the machine's hostname (hostname -s).
 # If there is no matching config, list available ones and ask the user.
 AVAILABLE=$(grep -E '^\s+"[^"]+"\s*=' "$MACHINES_DIR/flake.nix" \
@@ -55,7 +70,7 @@ if ! echo "$AVAILABLE" | grep -qx "$HOSTNAME"; then
   read -rp "Enter the configuration name to use: " HOSTNAME
 fi
 
-# ── 4. Apply ──────────────────────────────────────────────────────────────────
+# ── 5. Apply ──────────────────────────────────────────────────────────────────
 echo ""
 echo "==> Applying configuration..."
 sudo -H "$NIX_BIN" --extra-experimental-features "nix-command flakes" \
