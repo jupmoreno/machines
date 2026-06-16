@@ -21,6 +21,8 @@ else
   echo "==> Nix already installed, skipping."
 fi
 
+NIX_BIN=$(command -v nix)
+
 # ── 2. Fetch repo ─────────────────────────────────────────────────────────────
 if [ ! -d "$MACHINES_DIR" ]; then
   echo ""
@@ -52,7 +54,7 @@ fi
 # ── 4. Apply ──────────────────────────────────────────────────────────────────
 echo ""
 echo "==> Applying configuration..."
-nix --extra-experimental-features "nix-command flakes" \
+sudo "$NIX_BIN" --extra-experimental-features "nix-command flakes" \
   run nix-darwin -- switch --flake "$MACHINES_DIR#$HOSTNAME"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
